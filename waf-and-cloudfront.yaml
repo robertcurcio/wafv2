@@ -1,0 +1,150 @@
+Description: This creates a WebACL for CloudFront use only
+Resources:
+  CloudFrontWebACLs:
+    Type: AWS::WAFv2::WebACL
+    Properties:
+      Name: CloudFront-Web-ACL-Only
+      Scope: CLOUDFRONT
+      Description: This is for CloudFront and the scope is Global and can only be deployed from us-east-1 https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafv2-webacl.html
+      DefaultAction:
+        Block: {}
+      VisibilityConfig:
+        SampledRequestsEnabled: true
+        CloudWatchMetricsEnabled: true
+        MetricName: WebACLMetric
+      Rules:
+        - Name: black-list
+          Priority: 0
+          Statement:
+            IPSetReferenceStatement:
+              Arn:
+               !GetAtt IPSetBlackList.Arn
+          Action:
+            Block: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: black-list
+        - Name: whitelisted-ips
+          Priority: 1
+          Statement:
+            IPSetReferenceStatement:
+              Arn: 
+               !GetAtt IPSetWhiteList.Arn
+          Action:
+            Allow: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: whitelisted-ips
+        - Name: AWS-AWSManagedRulesAmazonIpReputationList
+          Priority: 2
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesAmazonIpReputationList
+          OverrideAction:
+            None: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: AWS-AWSManagedRulesAmazonIpReputationList
+        - Name: AWS-AWSManagedRulesWordPressRuleSet
+          Priority: 3
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesWordPressRuleSet
+          OverrideAction:
+            None: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: AWS-AWSManagedRulesWordPressRuleSet
+        - Name: AWS-AWSManagedRulesAnonymousIpList
+          Priority: 4
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesAnonymousIpList
+          OverrideAction:
+            None: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: AWS-AWSManagedRulesAnonymousIpList
+        - Name: AWS-AWSManagedRulesKnownBadInputsRuleSet
+          Priority: 5
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesKnownBadInputsRuleSet
+          OverrideAction:
+            None: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: AWS-AWSManagedRulesKnownBadInputsRuleSet
+        - Name: AWS-AWSManagedRulesCommonRuleSet
+          Priority: 6
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesCommonRuleSet
+          OverrideAction:
+            None: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: AWS-AWSManagedRulesCommonRuleSet
+        - Name: AWS-AWSManagedRulesPHPRuleSet
+          Priority: 7
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesPHPRuleSet
+          OverrideAction:
+            None: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: AWS-AWSManagedRulesPHPRuleSet
+        - Name: AWS-AWSManagedRulesLinuxRuleSet
+          Priority: 8
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesLinuxRuleSet
+          OverrideAction:
+            None: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: AWS-AWSManagedRulesLinuxRuleSet
+      VisibilityConfig:
+        SampledRequestsEnabled: true
+        CloudWatchMetricsEnabled: true
+        MetricName: wordpress-wafv2
+
+  IPSetBlackList:
+      Type: AWS::WAFv2::IPSet
+      Properties:
+        Description: BlackList
+        Name: BlackList1
+        Scope: CLOUDFRONT
+        IPAddressVersion: IPV4
+        Addresses:
+          - 1.2.1.1/32
+  IPSetWhiteList:
+      Type: AWS::WAFv2::IPSet
+      Properties:
+        Description: WhiteList
+        Name: WhiteList1
+        Scope: CLOUDFRONT
+        IPAddressVersion: IPV4
+        Addresses:
+          - 1.2.1.1/32
+Outputs:
+  WebAclID:
+    Description: The ID of the WebACL
+    Value: !GetAtt CloudFrontWebACLs.Id
