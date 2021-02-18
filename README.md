@@ -1,8 +1,24 @@
 # Stack Description:
-Here are 2 CloudFormation stacks specifically for designed to create WebACLs for 1. CloudFront distributions (Global) or 2. For regional use such as ALBs, API Gateway or AppSync 
+Here are 3 CloudFormation stacks specifically for designed to create WebACLs for WAFv2:
+
+regional-only-webacl.yaml 
 
 * Creates a WAFv2 ACL with Amazon managed rules 
 * Creates and attaches 2 IP sets (one blacklist and one whitelist)
-* The CLOUDFRONT scope must be deployed from us-east-1
+* Only works with regions, not Global
+* For regional use such as ALBs, API Gateway or AppSync
 
-Note: In the `Addresses:` list, please add your own custom IPV4 CIDR notations.
+waf-and-cloudfront.yaml
+
+* Creates a WAFv2 ACL with Amazon managed rules 
+* Creates and attaches 2 IP sets (one blacklist and one whitelist)
+* This can only be deployed from us-east-1 for the Global
+* For use wit CloudFront distributions only
+
+waf-with-rulegroup-and-2-ipsets.yaml
+
+* Creates a WAFv2 ACL with Amazon managed rules 
+* Creates and attaches 2 IP sets (one blacklist and one whitelist)
+* Creates and attaches 1 blank Rule Group
+* For use wit CloudFront distributions only
+
