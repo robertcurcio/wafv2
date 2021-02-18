@@ -1,5 +1,5 @@
 # Stack Description:
-Here are 3 CloudFormation stacks specifically for designed to create WebACLs for WAFv2:
+Here are 3 CloudFormation stacks specifically for designed to create WebACLs for WAFv2. The use case for these is for WordPress on Linux:
 
 regional-only-webacl.yaml 
 
